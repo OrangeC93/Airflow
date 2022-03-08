@@ -50,3 +50,12 @@ How it works:
 - once dag run complete, web server updates the UI that you're able t see that ok
 
 ![image](pics/how_it_works.png)
+
+## Install airflow 2.0
+- Install airflow vm, In local vscode, set up remote ssh to connect to vm. Connect to vm where a new vscode show up and you'd need to enter password
+- Create a sandbox where you're gonna to set up airflow and python packages(avoid messing u with alread installed python packages)
+- Inside sandbox, pip install apache-airflow == version and constraint python librarie, which is important because otherwise as soon as python dependency gets updated, you'll end up with trouble
+- Airflow db init
+- Airflow webserver -> local:8080 -> Airflow UI
+
+
