@@ -38,3 +38,15 @@ One node architecture
 
 Multi nodes architecture
 
+![image](pics/multi_node_architecture.png)
+
+How it works:
+- Add dag.py to folder dags, which will be parsed by web server and scheduler
+- then schechuler create a dag run object, which has a status of running in metasotre
+- next, the first task to executre i your data pipelein is scheduled
+- when the task is ready to be triggered in your data pipeline, you have a task instance object
+- once it's created, it will be sent to executer by the scheduler
+- executer runs task, updates task isntacne object, the status of task instance object in metasotre
+- once dag run complete, web server updates the UI that you're able t see that ok
+
+![image](pics/how_it_works.png)
