@@ -142,12 +142,28 @@ airflow celery flower
 ```
 open localhost/5555 > flower UI
 
+How can we add new machine, add a new walker to our airflow instance?
+```console
+source sandbox/bin/activate
+airflow celery workder
+```
+- if you have error about result backend, need to back to .cfg file, change - result_backed = db+postgresql//postgres:postgres@localhost/postgres
 
+Verify in Flower UI if we have a new worker?
 
-## Changing the executor
+Restart webserver and scheduler, then check Airflow UI, turn on parallel_dag see how celery executor works
 
 ## Concurrency, the parameters you must know
+Parallelism: max number of tasks that you can execute in parallel for your entire airflow instance
+- .cfg
+- now run paralle_dag, we can see task2 and task3 cannot be run together as we expect
 
+dag_concurrency: max number of tasks that you can execute in parallel for given DAG across all its diagrams. This number will naturally be limited by dag_concurrency. If you have 1 worker and want it to match your deployment’s capacity, worker_concurrency = parallelism.
+- and in parallel_dag.py the DAG func, change catchup=True
+- if set concurrency = 1 only applies to this specific DAG
+
+max_active_runs_per_dag: the max number of dag that can be parallel for a given dag
+- max_active_runs applies to this specific DAG
 ## Concurrency in practice
 
 
