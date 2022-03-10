@@ -33,8 +33,8 @@ with DAG('parallel_dag', schedule_interval='@daily', default_args=default_args):
     bash_command='sleep 3'
   )
   
-  task_2 = BashOperator(
-    task_id = 'task_2',
+  task_3 = BashOperator(
+    task_id = 'task_3',
     bash_command='sleep 3'
   )
   
