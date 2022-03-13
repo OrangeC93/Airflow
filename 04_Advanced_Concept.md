@@ -157,3 +157,6 @@ with DAG('xcom_dag', schedule_interval='@daily', default_args=default_args, catc
     downloading_data >> processing_tasks >> choose_model
 ```
 ## Choosing a specific path in your DAG
+BranchPythonOperator: allows you to execute one task or another by returning the task id of task you want to execute
+
+## Executing a task according to a condition
