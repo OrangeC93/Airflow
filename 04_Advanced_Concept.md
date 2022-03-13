@@ -119,13 +119,18 @@ def _training_model(ti):
 
 def _choose_best_model(ti):
     print('choose best model')
-
+    accuracies = ti.xcom_pull(key='model_accuracy', task_ids[
+      'processing_tasks.training_model_a',
+      'processing_tasks.training_model_b',
+      'processing_tasks.traning_meodel_c'])
+    print(accuracies)
 
 with DAG('xcom_dag', schedule_interval='@daily', default_args=default_args, catchup=False) as dag:
 
     downloading_data = BashOperator(
         task_id='downloading_data',
-        bash_command='sleep 3'
+        bash_command='sleep 3',
+        do_xcom_push=False
     )
 
     with TaskGroup('processing_tasks') as processing_tasks:
@@ -151,3 +156,4 @@ with DAG('xcom_dag', schedule_interval='@daily', default_args=default_args, catc
 
     downloading_data >> processing_tasks >> choose_model
 ```
+## Choosing a specific path in your DAG
