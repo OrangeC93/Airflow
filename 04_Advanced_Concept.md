@@ -112,12 +112,14 @@ default_args = {
     'start_date': datetime(2020, 1, 1)
 }
 
-def _training_model():
+def _training_model(ti):
     accuracy = uniform(0.1, 10.0)
     print(f'model\'s accuracy: {accuracy}')
+    ti.xcom_push(key='model_accuracy', value=accuracy)
 
-def _choose_best_model():
+def _choose_best_model(ti):
     print('choose best model')
+
 
 with DAG('xcom_dag', schedule_interval='@daily', default_args=default_args, catchup=False) as dag:
 
