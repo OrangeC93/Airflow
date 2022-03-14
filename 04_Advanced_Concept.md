@@ -239,4 +239,13 @@ with DAG('xcom_dag', schedule_interval='@daily', default_args=default_args, catc
 
 ```
 ## Trigger rules or how tasks get triggered
-Triggers allow you to 
+Triggers allow you to change the default behavior of your tasks。
+- 
+- For example, you want to execute a task as soon as one of its upstream tasks fails, you'll use a trigger rule. 
+
+There're 9 different triggers: [A,B] >> C
+- All succuss: 
+  - when task A fails, task C skipped
+  - when A, B success, C execute
+- All fail: when A,B fails, task C will execute, otherwise it will skipped
+- All done: allows you to e
