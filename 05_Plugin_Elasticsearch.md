@@ -23,10 +23,12 @@ How
 Lazy loaded: Plugins are lazy, loaded, which means whenever you add a new plugin in your every instance, you have to start it, otherwise it won't work.
 
 ## Creating a hook interacting with Elasticsearch
-Goal: create a hook to interact with ElasticSearch and a operator to transfer data fro Congress to ElasticSearch
+Goal: 
+- create a hook to interact with ElasticSearch
+- a operator to transfer data fro Congress to ElasticSearch
 
 Create plugin/elasticsearch_plugin/hooks/elastic_hook.py
-```
+```python
 from airflow.hooks.base import BaseHook
 
 from elasticsearch import Elasticsearch
@@ -94,3 +96,81 @@ with DAG('elasticsearch_dag', schedule_interval='@daily',
 Test in UI
 
 ## Creating the PostgresToElasticOperator
+plugins/elasticsearch_plugin/operators/postgres_to_elastic.py
+```python
+from airflow.models import BaseOperator
+from airflow.providers.postgres.hooks.postgres import PostgresHook
+from elasticsearch_plugin.hooks.elastic_hook import ElasticHook
+
+from contextlib import closing
+import json
+
+class PostgresToElasticOperator(BaseOperator):
+
+  def __init__(self, sql, index, postgres_conn_id='postgres_default'
+    elastic_conn_id='elasticsearch_default',*args, **kwargs):
+               
+    super(PostgresToElasticOperator, self).__init__(*args, **kwargs)
+               
+    self.sql = sql
+    self.index = index
+    self.postgres_conn_id = postgres_conn_id
+    self.elastic_conn_id = elastic_conn_id
+               
+  def execute(self, context):
+    es = ElasticHook(conn_id=self.elastic_conn_id)
+    pg = PostgresHook(postgres_conn_id=self.postgres_conn_id)
+    
+    with closing(pg.get_conn()) as conn:
+      with closing(conn.cursor()) as cur:
+        cur.itsersize = 1000
+        cur.execute(sql)
+        for row in cur:
+          doc = json.dumps(row, indent=2)
+          es.add_doc(index=self.index, doc_type='external',doc=doc)  
+```
+Recreate the postgres connection in UI
+- Add cursor: {"cursor":"realdictcursor"}, this is supoer important because by using that cursor, we will be able to transform the rules in json
+
+```console
+sudo -u postgres psql
+ALTER USER postgres PASSWORD 'postgres';
+```
+
+Check if we have data inside the index connections's:
+```
+curl -X GET "http://localhost::9200/connections/_search" -H "Content-type: application/json" -d '{"query":{match_all":{}}}'
+```
+
+```python
+import airflow impor DAG
+from elasticsearch_plugin.hooks.elestic_hook import ElasticHook
+from elasticseach_plugin.operators.postgres_to_elastic import PostgresToElasticOperator
+from airflow.operators.python import PythonOperator
+from datetime import datetime
+
+default_args = {
+  'start_date': datetime(2020,1,1)
+}
+
+def _print_es_info():
+  hook = ElasticHook()
+  print(hook.info())
+
+with DAG('elasticsearch_dag', schedule_interval='@daily',
+         default_args=default_args, catchup=False) as dag:
+         
+         print_es_info = PythonOperator(
+          task_id = 'print_es_info',
+          python_callable=_print_es_info
+         )
+         
+         connections_to_es = PostgresToElasticOperator(
+          task_id = 'connections_to_es',
+          sql = 'SELECT * FROM connection',
+          index = 'connections' ## where we store data
+         )
+         
+         print_es_info >> connections_to_es
+```
+
