@@ -27,7 +27,7 @@ Goal:
 - create a hook to interact with ElasticSearch
 - a operator to transfer data fro Congress to ElasticSearch
 
-Create plugin/elasticsearch_plugin/hooks/elastic_hook.py
+Create plugins/elasticsearch_plugin/hooks/elastic_hook.py
 ```python
 from airflow.hooks.base import BaseHook
 
@@ -63,7 +63,7 @@ class ElasticHook(BaseHook):
   # With that method. We are able to add document, we are able to add data.
   def add_doc(self, index, doc_type, doc):
     self.set_index(index)
-    res = self.es.index(index=index, doc_type=doc_type, doc=doc)
+    res = self.es.index(index=index, doc_type=doc_type, body=doc)
     return res
     
 ```
