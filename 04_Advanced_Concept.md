@@ -249,4 +249,4 @@ There're 9 different triggers: [A,B] >> C
   - when A, B success, C execute
 - All fail: when A,B fails, task C will execute, otherwise it will skipped
 - All done: allows you to execute the task, whatever the status of the upstream tasks
-- One success: as soon
+- One success: as soon as one success, task c will get trigger as well
