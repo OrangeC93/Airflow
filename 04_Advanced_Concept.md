@@ -238,3 +238,5 @@ with DAG('xcom_dag', schedule_interval='@daily', default_args=default_args, catc
     choose_model >> [accurate, inaccurate] >> storing
 
 ```
+## Trigger rules or how tasks get triggered
+Triggers allow you to 
